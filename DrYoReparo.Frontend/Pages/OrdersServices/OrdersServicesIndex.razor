@@ -1,0 +1,113 @@
+﻿@page "/MyOrderServices"
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+
+<h3>OrdersServicesIndex</h3>
+
+@if (OrdersService == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <a href="/MyOrderServices/Create" class="btn btn-primary">Nuevo Servicio</a>
+   <div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>EquipmentType</th>
+                <th>Brand</th>
+                <th>DateIncome</th>
+                <th>DateWithdrawal</th>
+                <th>NameOwner</th>
+                <th>LastnameOwner</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Diagnosis</th>
+                <th>CommentTechnical</th>
+                <th>RepairStatus</th>
+                <th>RepairValue</th> 
+            </tr>
+        </thead>
+        <tbody>
+               @foreach(var services in OrdersService)
+                {
+                    <tr>
+                      <td>@services.EquipmentType</td>
+                      <td>@services.Brand</td>
+                      <td>@($"{services.DateIncome:yyyy/MM/dd}")</td>
+                        <td>@($"{services.DateWithdrawal:yyyy/MM/dd}")</td>
+                      <td>@services.NameOwner</td>
+                      <td>@services.LastnameOwner</td>
+                      <td>@services.Phone</td>
+                      <td>@services.Email</td>
+                      <td>@services.Diagnosis</td>
+                      <td>@services.CommentTechnical</td>
+                      <td>@services.RepairStatus</td>
+                      <td>@services.RepairValue</td>
+                      <th>
+                            <a href="/MyOrderServices/Edit/@services.Id" class="btn btn-warning">Edit</a>
+                            <button class="btn btn-danger" @onclick=@(() => DeleteAsync(services))>Delete</button>
+                        </th>
+                  </tr>
+                }
+        </tbody>
+    </table>
+  </div>
+}
+
+@code {
+    public List<OrderService>? OrdersService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTasksAsync();
+    }
+
+    private async Task LoadTasksAsync()
+    {
+        var responseHttp = await repository.GetAsync<List<OrderService>>("api/OrdersServices");
+        if (!responseHttp.IsSuccess)
+        {
+            await sweetAlertService.FireAsync("Error", responseHttp.Message, SweetAlertIcon.Error);
+            return;
+        }
+        OrdersService = responseHttp.Result;
+    }
+
+    private async Task DeleteAsync(OrderService task)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirm",
+                Text = $"Are you sure to delete the task: {task.Id}?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHttp = await repository.DeleteAsync<OrderService>($"api/OrdersServices/{task.Id}");
+        if (!responseHttp.IsSuccess)
+        {
+            await sweetAlertService.FireAsync("Error", responseHttp.Message, SweetAlertIcon.Error);
+            return;
+        }
+
+        LoadTasksAsync();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowCloseButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Info, message: "Tasks deleted successfully.");
+    }
+}

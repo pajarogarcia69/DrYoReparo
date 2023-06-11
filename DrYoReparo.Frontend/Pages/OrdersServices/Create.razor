@@ -1,0 +1,37 @@
+﻿@page "/MyOrderServices/Create"
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+
+<h3>Creator</h3>
+
+<ServicesForm MyTask="myTask" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+
+@code {
+    private OrderService myTask = new() { DateIncome = DateTime.Today, DateWithdrawal = DateTime.Today };
+
+    private async Task CreateAsync()
+    {
+        var reponseHttp = await repository.PostAsync("/api/OrdersServices/", myTask);
+        if (!reponseHttp.IsSuccess)
+        {
+            await sweetAlertService.FireAsync("Error", reponseHttp.Message, SweetAlertIcon.Error);
+            return;
+        }
+        Return();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowCloseButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Info, message: "Order service created successfully.");
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/MyOrderServices");
+    }
+
+}

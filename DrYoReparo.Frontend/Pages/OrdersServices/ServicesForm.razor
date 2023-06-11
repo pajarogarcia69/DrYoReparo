@@ -1,0 +1,116 @@
+﻿<EditForm Model="MyTask" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator/>
+    <div class="mb-3">
+        <label>Equipment Type:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@MyTask.EquipmentType"/>
+            <ValidationMessage For="@(() => MyTask.EquipmentType)"/>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Brand:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@MyTask.Brand" />
+            <ValidationMessage For="@(() => MyTask.Brand)" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Date Income:</label>
+        <div>
+            <InputDate class="form-control" @bind-Value="@MyTask.DateIncome"/>
+            <ValidationMessage For="@(() => MyTask.DateIncome)" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Date Withdrawal:</label>
+        <div>
+            <InputDate class="form-control" @bind-Value="@MyTask.DateWithdrawal" />
+            <ValidationMessage For="@(() => MyTask.DateWithdrawal)" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Name Owner:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@MyTask.NameOwner" />
+            <ValidationMessage For="@(() => MyTask.NameOwner)" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>lastName Owner:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@MyTask.LastnameOwner" />
+            <ValidationMessage For="@(() => MyTask.LastnameOwner)" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Phone:</label>
+        <div>
+            <InputNumber class="form-control" @bind-Value="@MyTask.Phone" />
+            <ValidationMessage For="@(() => MyTask.Phone)" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Email:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@MyTask.Email" />
+            <ValidationMessage For="@(() => MyTask.Email)" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Diagnosis:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@MyTask.Diagnosis" />
+            <ValidationMessage For="@(() => MyTask.Diagnosis)" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Comment Technical:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@MyTask.CommentTechnical" />
+            <ValidationMessage For="@(() => MyTask.CommentTechnical)" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Repair Status:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@MyTask.RepairStatus" />
+            <ValidationMessage For="@(() => MyTask.RepairStatus)" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Repair Value:</label>
+        <div>
+            <InputNumber class="form-control" @bind-Value="@MyTask.RepairValue" />
+            <ValidationMessage For="@(() => MyTask.RepairValue)" />
+        </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Save</button>
+    <button class="btn btn-success" @onclick="ReturnAction">Return</button>
+</EditForm>
+
+
+@code {
+    [EditorRequired]
+    [Parameter]
+    public OrderService MyTask { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback ReturnAction { get; set; }
+}

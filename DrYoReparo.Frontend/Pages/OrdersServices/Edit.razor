@@ -1,0 +1,56 @@
+﻿@page "/MyOrderServices/Edit/{Id:int}"
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+
+<h3>Edit</h3>
+
+@if(myTask is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <ServicesForm MyTask="myTask" OnValidSubmit="SaveAsync" ReturnAction="Return" />
+}
+
+@code {
+    private OrderService? myTask;
+
+    [Parameter]
+    public int Id{ get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var responseHttp = await repository.GetAsync<OrderService>($"api/OrdersServices/{Id}");
+        if (!responseHttp.IsSuccess)
+        {
+            await sweetAlertService.FireAsync("Error", responseHttp.Message, SweetAlertIcon.Error);
+            return;
+        }
+        myTask = responseHttp.Result;
+    }
+    private async Task SaveAsync()
+    {
+        var reponseHttp = await repository.PutAsync("/api/OrdersServices/", myTask);
+        if (!reponseHttp.IsSuccess)
+        {
+            await sweetAlertService.FireAsync("Error", reponseHttp.Message, SweetAlertIcon.Error);
+            return;
+        }
+        Return();
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowCloseButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Info, message: "Order service update successfully.");
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/MyOrderServices");
+    }
+}
